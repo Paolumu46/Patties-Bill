@@ -13,6 +13,7 @@ function getSettingsSheet() {
     settingsSheet = ss.insertSheet('Settings');
     settingsSheet.appendRow(['Key', 'Value']);
     settingsSheet.appendRow(['FolderID', '']);
+    settingsSheet.appendRow(['AllowedEmails', '']); // New setting for access control
   }
   return settingsSheet;
 }
@@ -23,6 +24,41 @@ function processAction(action, data) {
   let headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   const settingsSheet = getSettingsSheet();
   
+  // --- Auth Check ---
+  let activeUserEmail = "";
+  let effectiveEmail = Session.getEffectiveUser().getEmail();
+  try { activeUserEmail = Session.getActiveUser().getEmail(); } catch(e) {}
+  
+  // Set fallback active user
+  if (!activeUserEmail) activeUserEmail = effectiveEmail; 
+
+  // Read Settings first for auth
+  let folderId = '';
+  let allowedEmailsStr = '';
+  const settingsData = settingsSheet.getDataRange().getValues();
+  for (let i = 1; i < settingsData.length; i++) {
+    if (settingsData[i][0] === 'FolderID') folderId = settingsData[i][1];
+    if (settingsData[i][0] === 'AllowedEmails') allowedEmailsStr = settingsData[i][1];
+  }
+
+  // Authorize User
+  const allowedEmails = allowedEmailsStr.split(',').map(e => e.trim().toLowerCase()).filter(e => e);
+  const isOwner = (activeUserEmail === effectiveEmail);
+  const isAuthorized = isOwner || allowedEmails.length === 0 || allowedEmails.includes(activeUserEmail.toLowerCase());
+  
+  if (action === 'checkAuth') {
+    return JSON.stringify({
+      status: isAuthorized ? 'success' : 'unauthorized',
+      userEmail: activeUserEmail,
+      isOwner: isOwner,
+      settings: { folderId: folderId, allowedEmails: allowedEmailsStr }
+    });
+  }
+
+  if (!isAuthorized) {
+    throw new Error("❌ บัญชี Google ของคุณ (" + activeUserEmail + ") ไม่ได้รับสิทธิ์ให้เข้าถึงข้อมูลบิลนี้ กรุณาติดต่อเจ้าระบบ");
+  }
+
   // --- Data CRUD ---
   if (action === 'read') {
     const rows = sheet.getDataRange().getDisplayValues();
@@ -37,14 +73,13 @@ function processAction(action, data) {
         result.push(obj);
     }
     
-    // Read Settings
-    let folderId = '';
-    const settingsData = settingsSheet.getDataRange().getValues();
-    for (let i = 1; i < settingsData.length; i++) {
-      if (settingsData[i][0] === 'FolderID') folderId = settingsData[i][1];
-    }
-    
-    return JSON.stringify({status: 'success', data: result.reverse(), settings: { folderId }});
+    return JSON.stringify({
+      status: 'success', 
+      userEmail: activeUserEmail,
+      isOwner: isOwner,
+      data: result.reverse(), 
+      settings: { folderId: folderId, allowedEmails: allowedEmailsStr }
+    });
   }
   
   if (action === 'create') {
@@ -80,25 +115,33 @@ function processAction(action, data) {
 
   // --- Settings ---
   if (action === 'saveSettings') {
-    const settingsData = settingsSheet.getDataRange().getValues();
-    let found = false;
+    if(!isOwner) throw new Error("สงวนสิทธิ์การแก้ไขการตั้งค่าสำหรับเจ้าของระบบเท่านั้น");
+    
+    let foundFolder = false;
+    let foundEmail = false;
+    
     for (let i = 1; i < settingsData.length; i++) {
       if (settingsData[i][0] === 'FolderID') {
         settingsSheet.getRange(i + 1, 2).setValue(data.folderId);
-        found = true;
-        break;
+        foundFolder = true;
+      }
+      if (settingsData[i][0] === 'AllowedEmails') {
+        settingsSheet.getRange(i + 1, 2).setValue(data.allowedEmails);
+        foundEmail = true;
       }
     }
-    if (!found) settingsSheet.appendRow(['FolderID', data.folderId]);
+    if (!foundFolder) settingsSheet.appendRow(['FolderID', data.folderId]);
+    if (!foundEmail) settingsSheet.appendRow(['AllowedEmails', data.allowedEmails]);
+    
     return JSON.stringify({status: 'success', message: 'บันทึกการตั้งค่าแล้ว'});
   }
 
   // --- Drive File Management ---
   if (action === 'listDriveFiles') {
-    const folderId = data.folderId;
-    if (!folderId) throw new Error("ยังไม่ได้กำหนด Folder ID ในตั้งค่า");
+    const searchFolderId = data.folderId;
+    if (!searchFolderId) throw new Error("ยังไม่ได้กำหนด Folder ID ในตั้งค่า");
     
-    const folder = DriveApp.getFolderById(folderId);
+    const folder = DriveApp.getFolderById(searchFolderId);
     const files = folder.getFilesByType(MimeType.PDF);
     const fileList = [];
     
@@ -130,16 +173,14 @@ function processAction(action, data) {
   }
 
   if (action === 'savePdf') {
-    const folderId = data.folderId;
-    if (!folderId) throw new Error("กรุณาตั้งค่า Folder ID ก่อนสรา้งไฟล์");
+    const destFolderId = data.folderId;
+    if (!destFolderId) throw new Error("กรุณาตั้งค่า Folder ID ก่อนสร้างไฟล์");
 
     const htmlContent = data.htmlContent; 
     const fileName = data.fileName || ('Invoice_' + new Date().getTime() + '.pdf');
 
-    // Create a Blob from HTML content
     const blob = Utilities.newBlob(htmlContent, MimeType.HTML, fileName).getAs(MimeType.PDF);
-    
-    const folder = DriveApp.getFolderById(folderId);
+    const folder = DriveApp.getFolderById(destFolderId);
     const file = folder.createFile(blob);
     
     return JSON.stringify({

@@ -23,6 +23,31 @@
             overflow: hidden;
         }
 
+        /* Auth Screen */
+        #authScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f3f4f6;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            text-align: center;
+            width: 90%;
+        }
+
         .sidebar {
             width: 250px;
             background-color: #1e1b4b;
@@ -39,6 +64,17 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .user-profile {
+            padding: 15px 20px;
+            font-size: 0.85rem;
+            color: #a5b4fc;
+            background: #312e81;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-bottom: 1px solid #1e1b4b;
         }
 
         .nav-btn {
@@ -621,8 +657,38 @@
 </head>
 
 <body>
+
+    <!-- Auth Screen Overlay -->
+    <div id="authScreen">
+        <div class="auth-card">
+            <span class="material-icons-round"
+                style="font-size: 5rem; color: #6366f1; margin-bottom: 10px;">account_circle</span>
+            <h2 id="authTitle" style="margin-bottom: 10px;">กำลังตรวจสอบสิทธิ์ผู้ใช้...</h2>
+            <p id="authDesc" style="color: #6b7280; margin-bottom: 25px;">กรุณารอสักครู่ ระบบกำลังเช็คอีเมลบัญชี Google
+                ของคุณเพื่อยืนยันการเข้าใช้งาน</p>
+            <div id="authLoader" class="loader" style="width: 40px; height: 40px; border-width: 4px;"></div>
+            <div id="authErrorPanel"
+                style="display:none; text-align:left; background:#fee2e2; padding:15px; border-radius:8px; margin-top:15px;">
+                <div style="font-weight:600; color:#b91c1c; display:flex; align-items:center; gap:5px;"><span
+                        class="material-icons-round">error</span> ปฏิเสธการเข้าถึง</div>
+                <p id="authErrorMsg" style="color:#991b1b; font-size:0.9rem; margin-top:5px; margin-bottom:0;"></p>
+            </div>
+            <button class="btn btn-outline" id="btnRefreshAuth" style="display:none; margin-top: 20px; width:100%;"
+                onclick="checkAuth()">โหลดใหม่</button>
+        </div>
+    </div>
+
     <aside class="sidebar no-print">
         <div class="sidebar-header"><span class="material-icons-round">receipt_long</span> Patties Bill</div>
+
+        <div class="user-profile">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span class="material-icons-round" style="font-size: 1.2rem;">account_circle</span>
+                <span style="font-weight:600;">บัญชีที่เข้าสู่ระบบ:</span>
+            </div>
+            <div id="loggedEmail" style="word-break: break-all; margin-top:4px;">กำลังโหลด...</div>
+        </div>
+
         <div style="padding: 20px 0; flex-grow: 1;">
             <button class="nav-btn active" id="nav-dash" onclick="changeView('view-dashboard')"><span
                     class="material-icons-round">dashboard</span> ประวัติบิล</button>
@@ -773,6 +839,13 @@
                     style="margin-top:0; margin-bottom: 24px; font-size: 1.5rem; display: flex; align-items: center; gap: 10px;">
                     <span class="material-icons-round" style="color:#6b7280;">settings</span> ตั้งค่าระบบ
                 </h2>
+
+                <div id="unauthorizedSettingsMsg"
+                    style="display:none; background:#fee2e2; border-radius:8px; padding:15px; margin-bottom:20px; color:#b91c1c;">
+                    <span class="material-icons-round" style="vertical-align:middle;">lock</span> <b>เข้าถึงจำกัด:</b>
+                    คุณไม่ใช่เจ้าของระบบ จึงไม่สามารถแก้การตั้งค่าได้
+                </div>
+
                 <div class="input-group">
                     <label>Google Drive Folder ID (สำหรับบันทึกไฟล์ PDF)</label>
                     <input type="text" id="settingFolderId" placeholder="เช่น 1A2b3C4d5E6f7G8h9I0J">
@@ -782,6 +855,21 @@
                             style="background:#f3f4f6; padding:2px 4px; border-radius:4px;">https://drive.google.com/drive/folders/<b>1A2b3C4d5E...</b></code>
                     </p>
                 </div>
+
+                <hr style="border:0; border-top:1px solid #e5e7eb; margin:25px 0;" />
+
+                <div class="input-group">
+                    <label>ระบบกำหนดสิทธิ์การเข้าถึง (Allowed Google Emails)</label>
+                    <input type="text" id="settingAllowedEmails" placeholder="example1@gmail.com, example2@gmail.com">
+                    <p style="font-size: 0.85rem; color: #6b7280; margin-top: 8px; line-height: 1.5;">
+                        ระบุ <b>อีเมล</b> ที่คุณอนุญาตให้ใช้งานระบบนี้ได้ (คั่นด้วยลูกน้ำ <code>,</code>
+                        กรณีมีหลายคน)<br />
+                        <i>* กรณีเว้นว่างไว้ จะถือว่าเปิดสาธารณะ (ใครที่มีลิงก์ก็เข้าได้ตราบใดที่ใช้ Google
+                            Account)</i><br />
+                        <i>* อีเมลเจ้าของระบบ จะเข้าได้เสมอแม้ไม่ได้ระบุไว้ในช่องนี้</i>
+                    </p>
+                </div>
+
                 <button class="btn btn-success" id="btnSaveSetting" onclick="saveSettings()" style="margin-top: 15px;">
                     <span class="material-icons-round">save</span> บันทึกการตั้งค่า
                 </button>
@@ -794,9 +882,64 @@
 
     <script>
         let invoicesData = [], isMockMode = false;
-        let appSettings = { folderId: '' };
+        let appSettings = { folderId: '', allowedEmails: '' };
+        let currentUserIsOwner = false;
 
-        window.onload = () => { loadData(); };
+        window.onload = () => { checkAuth(); };
+
+        function checkAuth() {
+            if (typeof google === 'undefined') {
+                isMockMode = true;
+                setTimeout(() => {
+                    document.getElementById('loggedEmail').innerText = 'mock_user@gmail.com (Mock Mode)';
+                    document.getElementById('authScreen').style.display = 'none';
+                    appSettings.folderId = 'mock_folder_123';
+                    document.getElementById('settingFolderId').value = appSettings.folderId;
+                    loadData();
+                }, 1000);
+                return;
+            }
+
+            document.getElementById('authLoader').style.display = 'inline-block';
+            document.getElementById('authErrorPanel').style.display = 'none';
+            document.getElementById('btnRefreshAuth').style.display = 'none';
+            document.getElementById('authTitle').innerText = 'กำลังตรวจสอบสิทธิ์ผู้ใช้...';
+
+            google.script.run.withSuccessHandler(res => {
+                let j = JSON.parse(res);
+                if (j.status === 'success') {
+                    // Auth Passed
+                    document.getElementById('loggedEmail').innerText = j.userEmail || 'ไม่ได้ระบุพิกัด (Public)';
+                    currentUserIsOwner = j.isOwner;
+                    appSettings = j.settings || appSettings;
+
+                    if (!currentUserIsOwner) {
+                        document.getElementById('settingFolderId').readOnly = true;
+                        document.getElementById('settingAllowedEmails').readOnly = true;
+                        document.getElementById('btnSaveSetting').style.display = 'none';
+                        document.getElementById('unauthorizedSettingsMsg').style.display = 'block';
+                    }
+
+                    document.getElementById('authScreen').style.display = 'none';
+                    loadData(); // Proceed to load data
+                } else {
+                    // Auth Failed
+                    document.getElementById('authLoader').style.display = 'none';
+                    document.getElementById('authTitle').style.color = '#dc2626';
+                    document.getElementById('authTitle').innerText = 'คุณไม่มีสิทธิ์เข้าถึง';
+                    document.getElementById('authErrorPanel').style.display = 'block';
+                    document.getElementById('authErrorMsg').innerText = j.message || 'บัญชี ' + (j.userEmail || 'ของคุณ') + ' ไม่ได้รับอนุญาตให้เข้าใช้งานระบบข้อมูลบิลนี้ กรุณาเปลี่ยนเป็นบัญชีที่ถูกต้อง';
+                    document.getElementById('btnRefreshAuth').style.display = 'block';
+                }
+            }).withFailureHandler(err => {
+                document.getElementById('authLoader').style.display = 'none';
+                document.getElementById('authTitle').style.color = '#dc2626';
+                document.getElementById('authTitle').innerText = 'ปฏิเสธการเข้าถึง';
+                document.getElementById('authErrorPanel').style.display = 'block';
+                document.getElementById('authErrorMsg').innerText = err.message || err.toString();
+                document.getElementById('btnRefreshAuth').style.display = 'block';
+            }).apiRequest('checkAuth', {});
+        }
 
         function changeView(vid) {
             document.querySelectorAll('.view, .nav-btn').forEach(el => el.classList.remove('active'));
@@ -818,12 +961,9 @@
 
         function loadData() {
             document.getElementById('loadingDash').style.display = 'flex';
-            if (typeof google === 'undefined') {
-                isMockMode = true;
+            if (isMockMode) {
                 setTimeout(() => {
                     invoicesData = [{ _rowIndex: 2, Date: '01/03/2569', LogNo: 'A17', Room: 'A17', CustomerName: 'สุมนา', TotalAmt: '4000.00' }];
-                    appSettings.folderId = 'mock_folder_123';
-                    document.getElementById('settingFolderId').value = appSettings.folderId;
                     renderTable();
                     document.getElementById('loadingDash').style.display = 'none';
                 }, 500);
@@ -836,6 +976,7 @@
                     if (j.settings) {
                         appSettings = j.settings;
                         document.getElementById('settingFolderId').value = appSettings.folderId || '';
+                        document.getElementById('settingAllowedEmails').value = appSettings.allowedEmails || '';
                     }
                     renderTable();
                 } else {
@@ -925,12 +1066,24 @@
         }
 
         function saveSettings() {
+            if (!currentUserIsOwner && !isMockMode) {
+                showToast("คุณไม่มีสิทธิ์แก้ไขการตั้งค่า", true);
+                return;
+            }
+
             const fid = document.getElementById('settingFolderId').value.trim();
+            const allowedEms = document.getElementById('settingAllowedEmails').value.trim();
             const btn = document.getElementById('btnSaveSetting');
             btn.disabled = true; btn.innerHTML = '<div class="loader" style="width:16px; height:16px; border-width:2px; margin-right:5px; border-top-color:#fff;"></div> กำลังบันทึก...';
 
             if (isMockMode) {
-                setTimeout(() => { appSettings.folderId = fid; showToast('บันทึกสำเร็จ (Mock)'); btn.disabled = false; btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกการตั้งค่า'; }, 500); return;
+                setTimeout(() => {
+                    appSettings.folderId = fid;
+                    appSettings.allowedEmails = allowedEms;
+                    showToast('บันทึกสำเร็จ (Mock)');
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกการตั้งค่า';
+                }, 500); return;
             }
 
             google.script.run.withSuccessHandler(res => {
@@ -938,11 +1091,12 @@
                 btn.disabled = false; btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกการตั้งค่า';
                 if (j.status === 'success') {
                     appSettings.folderId = fid;
+                    appSettings.allowedEmails = allowedEms;
                     showToast(j.message);
                 } else {
                     showToast(j.message, true);
                 }
-            }).apiRequest('saveSettings', { folderId: fid });
+            }).apiRequest('saveSettings', { folderId: fid, allowedEmails: allowedEms });
         }
 
         function loadDriveFiles() {
@@ -1028,7 +1182,6 @@
             if (!confirm(`ต้องการสร้างเป็นไฟล์แจ้งหนี้ PDF (${fName}) ลงใน Google Drive หรือไม่?`)) return;
 
             // Generate HTML Snapshot specifically for Google Drive Utilities PDF Generation bounds
-            // Notice: PDF in apps script might not support full CSS3, so we use simpler inline-style oriented HTML
             const docHtml = `<div style="font-family: 'Sarabun', sans-serif; font-size: 13px; color: #000;">
                 <h1 style="text-align:center; font-size:20px; font-weight:bold; margin-bottom:5px;">ใบแจ้งหนี้</h1>
                 <h2 style="text-align:center; font-size:16px; margin:0 0 15px 0;">INVOICE</h2>
