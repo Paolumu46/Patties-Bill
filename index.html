@@ -882,7 +882,7 @@
     </main>
 
     <script>
-        let invoicesData = [], isMockMode = false;
+        let invoicesData = [];
         let appSettings = { folderId: '', allowedEmails: '' };
         let currentUserIsOwner = false;
 
@@ -890,14 +890,12 @@
 
         function checkAuth() {
             if (typeof google === 'undefined') {
-                isMockMode = true;
-                setTimeout(() => {
-                    document.getElementById('loggedEmail').innerText = 'mock_user@gmail.com (Mock Mode)';
-                    document.getElementById('authScreen').style.display = 'none';
-                    appSettings.folderId = 'mock_folder_123';
-                    document.getElementById('settingFolderId').value = appSettings.folderId;
-                    loadData();
-                }, 1000);
+                document.getElementById('authLoader').style.display = 'none';
+                document.getElementById('authTitle').style.color = '#dc2626';
+                document.getElementById('authTitle').innerText = 'ไม่สามารถเชื่อมต่อระบบหลังบ้านได้';
+                document.getElementById('authDesc').style.display = 'none';
+                document.getElementById('authErrorPanel').style.display = 'block';
+                document.getElementById('authErrorMsg').innerText = 'โปรดเปิดระบบนี้ผ่าน Google Apps Script Web App URL เท่านั้น (ไม่สามารถรันไฟล์ .html ธรรมดาได้)';
                 return;
             }
 
@@ -962,14 +960,6 @@
 
         function loadData() {
             document.getElementById('loadingDash').style.display = 'flex';
-            if (isMockMode) {
-                setTimeout(() => {
-                    invoicesData = [{ _rowIndex: 2, Date: '01/03/2569', LogNo: 'A17', Room: 'A17', CustomerName: 'สุมนา', TotalAmt: '4000.00' }];
-                    renderTable();
-                    document.getElementById('loadingDash').style.display = 'none';
-                }, 500);
-                return;
-            }
             google.script.run.withSuccessHandler(res => {
                 let j = JSON.parse(res);
                 if (j.status === 'success') {
@@ -1049,8 +1039,6 @@
             const a = d._rowIndex ? 'update' : 'create'; const btn = document.getElementById('btnSubmit');
             btn.disabled = true; btn.innerHTML = '<div class="loader" style="width:16px; height:16px; border-width:2px; margin-right:5px; border-top-color:#fff;"></div> กำลังบันทึก...';
 
-            if (isMockMode) { setTimeout(() => { showToast('บันทึกสำเร็จ (Mock)'); btn.disabled = false; btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกข้อมูลบิล'; changeView('view-dashboard'); }, 500); return; }
-
             google.script.run.withSuccessHandler(res => {
                 let j = JSON.parse(res); btn.disabled = false; btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกข้อมูลบิล';
                 if (j.status === 'success') { showToast(j.message); loadData(); changeView('view-dashboard'); } else showToast(j.message, true);
@@ -1059,7 +1047,6 @@
 
         function deleteInvoice(rid) {
             if (!confirm('ลบใบแจ้งหนี้นี้อย่างถาวร (พ้นจากฐานข้อมูล)?')) return;
-            if (isMockMode) { showToast('ลบสำเร็จ (Mock)'); return; }
             document.getElementById('loadingDash').style.display = 'flex';
             google.script.run.withSuccessHandler(res => {
                 let j = JSON.parse(res); if (j.status === 'success') { showToast(j.message); loadData(); } else { showToast(j.message, true); document.getElementById('loadingDash').style.display = 'none'; }
@@ -1076,16 +1063,6 @@
             const allowedEms = document.getElementById('settingAllowedEmails').value.trim();
             const btn = document.getElementById('btnSaveSetting');
             btn.disabled = true; btn.innerHTML = '<div class="loader" style="width:16px; height:16px; border-width:2px; margin-right:5px; border-top-color:#fff;"></div> กำลังบันทึก...';
-
-            if (isMockMode) {
-                setTimeout(() => {
-                    appSettings.folderId = fid;
-                    appSettings.allowedEmails = allowedEms;
-                    showToast('บันทึกสำเร็จ (Mock)');
-                    btn.disabled = false;
-                    btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกการตั้งค่า';
-                }, 500); return;
-            }
 
             google.script.run.withSuccessHandler(res => {
                 let j = JSON.parse(res);
@@ -1111,17 +1088,6 @@
             document.getElementById('fileManagerNoSettings').style.display = 'none';
             document.getElementById('fileManagerContent').style.display = 'block';
             document.getElementById('loadingFiles').style.display = 'flex';
-
-            if (isMockMode) {
-                setTimeout(() => {
-                    drawFilesGrid([
-                        { id: '1', name: 'Invoice_Bill_A17.pdf', url: '#', dateCreated: '02/03/2026 15:30' },
-                        { id: '2', name: 'Invoice_Bill_B12.pdf', url: '#', dateCreated: '01/03/2026 10:15' }
-                    ]);
-                    document.getElementById('loadingFiles').style.display = 'none';
-                }, 800);
-                return;
-            }
 
             google.script.run.withSuccessHandler(res => {
                 let j = JSON.parse(res);
@@ -1160,7 +1126,6 @@
 
         function deleteDriveFile(fileId) {
             if (!confirm('ยืนยันลบไฟล์ PDF นี้ออกจาก Google Drive? (ไฟล์จะไปอยู่ในถังขยะ)')) return;
-            if (isMockMode) { showToast('ลบสำเร็จ (Mock)'); loadDriveFiles(); return; }
 
             document.getElementById('loadingFiles').style.display = 'flex';
             google.script.run.withSuccessHandler(res => {
@@ -1216,8 +1181,6 @@
             const printHtml = `<html lang="th"><head><meta charset="utf-8"/></head><body style="padding:40px; font-family: sans-serif;">
                 ${docHtml} <br/><hr style="border-top:1px dashed #ccc; margin:30px 0;"/><br/> ${docHtml}
             </body></html>`;
-
-            if (isMockMode) { showToast("Mock PDF Generated & Saved!"); return; }
 
             document.getElementById('loadingDash').style.display = 'flex';
             google.script.run.withSuccessHandler(res => {
