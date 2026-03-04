@@ -1,15 +1,752 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 
 <head>
-    <title>Page Title</title>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบริหารจัดการบิล Patties Bill</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            margin: 0;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #1e1b4b;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-bottom: 1px solid #312e81;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 16px 20px;
+            background: none;
+            border: none;
+            border-left: 4px solid transparent;
+            color: #c7d2fe;
+            text-align: left;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s;
+        }
+
+        .nav-btn:hover,
+        .nav-btn.active {
+            background-color: #312e81;
+            color: white;
+            border-left-color: #6366f1;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #6366f1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #4f46e5;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+
+        .btn-outline:hover {
+            background-color: #f3f4f6;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        input[readonly] {
+            background-color: #f9fafb;
+            color: #6b7280;
+            font-weight: 600;
+            cursor: not-allowed;
+        }
+
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 0 15px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .search-bar input {
+            border: none;
+            padding: 12px 10px;
+            box-shadow: none;
+            border-radius: 0;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px;
+            border: none;
+            background: #f3f4f6;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #4b5563;
+            transition: 0.2s;
+            display: inline-flex;
+        }
+
+        .action-btn:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 20px;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #10b981;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #6366f1;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            flex-direction: column;
+            gap: 10px;
+            color: #4b5563;
+            font-weight: 500;
+            display: none;
+        }
+
+        @media print {
+            body {
+                background: white;
+                height: auto;
+                overflow: visible;
+            }
+
+            .no-print,
+            .sidebar {
+                display: none !important;
+            }
+
+            .main-content {
+                padding: 0;
+                overflow: visible;
+            }
+
+            .view {
+                display: none !important;
+            }
+
+            #view-print {
+                display: block !important;
+            }
+
+            .invoice-wrapper {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 15mm;
+                box-sizing: border-box;
+                box-shadow: none;
+            }
+
+            .invoice-half {
+                height: 48%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .invoice-divider {
+                border-top: 1px dashed #ccc;
+                margin: 2% 0;
+                height: 1px;
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 10px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+                margin: 0;
+                font-weight: bold;
+            }
+
+            .header h2 {
+                font-size: 18px;
+                margin: 0;
+                letter-spacing: 2px;
+            }
+
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            .log-box {
+                border: 1px solid #000;
+                padding: 2px 20px;
+                display: inline-block;
+                min-width: 100px;
+                text-align: center;
+                border-radius: 4px;
+            }
+
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+                flex-grow: 1;
+            }
+
+            .print-table th,
+            .print-table td {
+                border: 1px solid #000;
+                padding: 8px;
+            }
+
+            .print-table th {
+                text-align: center;
+                background-color: #f9f9f9;
+                color: #000;
+            }
+
+            .col-room {
+                width: 15%;
+                text-align: center;
+                font-weight: bold;
+            }
+
+            .col-desc {
+                width: 60%;
+            }
+
+            .col-amount {
+                width: 25%;
+                text-align: right;
+            }
+
+            .no-border-bottom td {
+                border-bottom: none;
+            }
+
+            .no-border-top td {
+                border-top: none;
+            }
+
+            .no-border-tb td {
+                border-top: none;
+                border-bottom: none;
+            }
+
+            .totals {
+                display: flex;
+                font-size: 14px;
+            }
+
+            .totals-text {
+                width: 75%;
+                border: 1px solid #000;
+                border-right: none;
+                border-top: none;
+                padding: 8px;
+                text-align: left;
+            }
+
+            .totals-amount {
+                width: 25%;
+                border: 1px solid #000;
+                border-top: none;
+                padding: 8px;
+                text-align: right;
+                font-weight: bold;
+                background: #f9f9f9;
+            }
+
+            .footer {
+                display: flex;
+                justify-content: space-between;
+                font-size: 14px;
+                margin-top: 15px;
+            }
+
+            .payment-box {
+                border: 1px solid #000;
+                border-radius: 8px;
+                padding: 10px;
+                width: 60%;
+            }
+
+            .qr-placeholder {
+                width: 80px;
+                height: 80px;
+                background: #eee;
+                border: 1px solid #ccc;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+
+            .payment-info {
+                display: flex;
+                gap: 15px;
+            }
+
+            .sign-box {
+                width: 35%;
+                display: flex;
+                align-items: flex-end;
+                justify-content: flex-end;
+                padding-bottom: 10px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-
-    <h1>My First Heading</h1>
-    <p>My first paragraph.</p>
-
+    <aside class="sidebar no-print">
+        <div class="sidebar-header"><span class="material-icons-round">receipt_long</span> Patties Bill</div>
+        <div style="padding: 20px 0;">
+            <button class="nav-btn active" id="nav-dash" onclick="changeView('view-dashboard')"><span
+                    class="material-icons-round">dashboard</span> ประวัติบิล</button>
+            <button class="nav-btn" id="nav-new" onclick="startNewInvoice()"><span
+                    class="material-icons-round">add_circle</span> ออกบิลใหม่</button>
+        </div>
+    </aside>
+    <main class="main-content">
+        <div id="toast" class="toast"><span class="material-icons-round" id="toast-icon">check_circle</span><span
+                id="toast-message">บันทึกสำเร็จ</span></div>
+        <div id="view-dashboard" class="view active no-print">
+            <div class="dash-header">
+                <h2 style="margin: 0;">ประวัติใบแจ้งหนี้ทั้งหมด</h2>
+                <div class="search-bar"><span class="material-icons-round">search</span><input type="text"
+                        id="searchInput" placeholder="ค้นหา ชื่อ, ห้อง, เบอร์, Log..." oninput="filterTable()"></div>
+                <button class="btn btn-primary" onclick="startNewInvoice()"><span
+                        class="material-icons-round">add</span> สร้างบิลใหม่</button>
+            </div>
+            <div class="card" style="position: relative; min-height: 400px;">
+                <div id="loading" class="loading-overlay">
+                    <div class="loader"></div>
+                    <div>กำลังโหลดข้อมูล...</div>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table" id="invoiceTable">
+                        <thead>
+                            <tr>
+                                <th>วันที่</th>
+                                <th>Log No.</th>
+                                <th>ห้อง</th>
+                                <th>ชื่อลูกค้า</th>
+                                <th>ยอดรวม (บาท)</th>
+                                <th style="width: 120px; text-align: center;">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="view-form" class="view no-print">
+            <div class="card" style="max-width: 900px; margin: 0 auto;">
+                <h2 id="formTitle"
+                    style="margin-top:0; margin-bottom: 24px; font-size: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                </h2>
+                <form id="invoiceForm" onsubmit="saveInvoice(event)">
+                    <input type="hidden" id="form_rowIndex" name="_rowIndex">
+                    <h3
+                        style="font-size: 1.1rem; border-bottom: 2px solid #f3f4f6; padding-bottom: 8px; margin-bottom: 20px;">
+                        ข้อมูลสรุป</h3>
+                    <div class="grid-2">
+                        <div class="input-group"><label>Log No.</label><input name="LogNo" placeholder="A17/A18"
+                                required></div>
+                        <div class="input-group"><label>วันที่ออกบิล</label><input name="Date" id="form_date"
+                                placeholder="DD/MM/YYYY" required></div>
+                        <div class="input-group"><label>ชื่อลูกค้า / ผู้เช่า</label><input name="CustomerName"
+                                placeholder="คุณสุมนา"></div>
+                        <div class="input-group"><label>เบอร์โทรศัพท์</label><input name="CustomerPhone"
+                                placeholder="08X-XXX-XXXX"></div>
+                        <div class="input-group"><label>ห้อง (Room)</label><input name="Room" placeholder="A17"></div>
+                    </div>
+                    <h3
+                        style="font-size: 1.1rem; border-bottom: 2px solid #f3f4f6; padding-bottom: 8px; margin-top: 30px; margin-bottom: 20px;">
+                        รายการค่าใช้จ่าย</h3>
+                    <div class="items-grid"><input name="Item1Desc" placeholder="รายการที่ 1"><input name="Item1Amt"
+                            placeholder="จำนวนเงิน" type="number" step="0.01" oninput="calcTotal()"></div>
+                    <div class="items-grid"><input name="Item2Desc" placeholder="รายการที่ 2"><input name="Item2Amt"
+                            placeholder="จำนวนเงิน" type="number" step="0.01" oninput="calcTotal()"></div>
+                    <div class="items-grid"><input name="Item3Desc" placeholder="รายการที่ 3"><input name="Item3Amt"
+                            placeholder="จำนวนเงิน" type="number" step="0.01" oninput="calcTotal()"></div>
+                    <div class="items-grid"><input name="Item4Desc" placeholder="รายการที่ 4"><input name="Item4Amt"
+                            placeholder="จำนวนเงิน" type="number" step="0.01" oninput="calcTotal()"></div>
+                    <h3
+                        style="font-size: 1.1rem; border-bottom: 2px solid #f3f4f6; padding-bottom: 8px; margin-top: 30px; margin-bottom: 20px;">
+                        ยอดรวมและช่องทางชำระเงิน</h3>
+                    <div class="grid-2">
+                        <div class="input-group"><label>ยอดรวมทั้งสิ้น</label><input name="TotalAmt" id="form_totalAmt"
+                                readonly></div>
+                        <div class="input-group"><label style="color:#6366f1;">ยอดรวมตัวอักษร (อัตโนมัติ)</label><input
+                                name="TotalText" id="form_totalText"></div>
+                        <div class="input-group"><label>ชื่อธนาคาร</label><input name="BankName"></div>
+                        <div class="input-group"><label>ชื่อบัญชี</label><input name="AccName"></div>
+                        <div class="input-group"><label>เลขบัญชี</label><input name="AccNo"></div>
+                        <div class="input-group"><label>ภาพ QR Code (URL)</label><input name="QRPicUrl"
+                                placeholder="https://..."></div>
+                    </div>
+                    <div style="margin-top: 35px; display: flex; gap: 15px;">
+                        <button type="submit" class="btn btn-primary" id="btnSubmit"><span
+                                class="material-icons-round">save</span> บันทึกข้อมูลบิล</button>
+                        <button type="button" class="btn btn-outline"
+                            onclick="changeView('view-dashboard')">ยกเลิก</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="view-print" class="view"></div>
+    </main>
+    <script>
+        let invoicesData = [], isMockMode = false;
+        window.onload = () => { loadData(); };
+        function changeView(vid) {
+            document.querySelectorAll('.view, .nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(vid).classList.add('active');
+            if (vid === 'view-dashboard') document.getElementById('nav-dash').classList.add('active');
+            if (vid === 'view-form') document.getElementById('nav-new').classList.add('active');
+        }
+        function showToast(msg, err = false) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            document.getElementById('toast-icon').innerText = err ? 'error' : 'check_circle';
+            err ? t.classList.add('error') : t.classList.remove('error');
+            t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500);
+        }
+        function loadData() {
+            document.getElementById('loading').style.display = 'flex';
+            if (typeof google === 'undefined') {
+                isMockMode = true;
+                setTimeout(() => { invoicesData = [{ _rowIndex: 2, Date: '01/03/2569', LogNo: 'A17', Room: 'A17', CustomerName: 'สุมนา', TotalAmt: '4000.00' }]; renderTable(); document.getElementById('loading').style.display = 'none'; }, 500);
+                return;
+            }
+            google.script.run.withSuccessHandler(res => {
+                let j = JSON.parse(res);
+                if (j.status === 'success') { invoicesData = j.data; renderTable(); } else showToast(j.message, true);
+                document.getElementById('loading').style.display = 'none';
+            }).apiRequest('read', {});
+        }
+        function filterTable() { renderTable(document.getElementById('searchInput').value.toLowerCase()); }
+        function renderTable(term = '') {
+            const tb = document.querySelector('#invoiceTable tbody'); tb.innerHTML = '';
+            const filtered = invoicesData.filter(i => (`${i.CustomerName || ''} ${i.CustomerPhone || ''} ${i.Room || ''} ${i.LogNo || ''} ${i.Date || ''}`).toLowerCase().includes(term));
+            if (filtered.length === 0) return tb.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color:#6b7280;">ไม่พบข้อมูล</td></tr>';
+            filtered.forEach(i => {
+                tb.innerHTML += `<tr><td>${i.Date || '-'}</td><td style="font-weight:500;">${i.LogNo || '-'}</td><td>${i.Room || '-'}</td>
+                <td><div style="font-weight:500;">${i.CustomerName || '-'}</div><div style="font-size:0.8rem; color:#6b7280;">${i.CustomerPhone || ''}</div></td>
+                <td style="font-weight:600; text-align:right; padding-right:25px;">${i.TotalAmt ? Number(i.TotalAmt).toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</td>
+                <td style="text-align:center;"><div class="action-btns" style="justify-content:center;">
+                <button class="action-btn" title="พิมพ์" onclick="printInvoice('${i._rowIndex}')"><span class="material-icons-round" style="color:#6366f1;">print</span></button>
+                <button class="action-btn" title="แก้ไข" onclick="editInvoice('${i._rowIndex}')"><span class="material-icons-round" style="color:#f59e0b;">edit</span></button>
+                <button class="action-btn btn-delete" title="ลบ" onclick="deleteInvoice('${i._rowIndex}')"><span class="material-icons-round">delete</span></button></div></td></tr>`;
+            });
+        }
+        function startNewInvoice() {
+            document.getElementById('formTitle').innerHTML = '<span class="material-icons-round" style="color:#6366f1;">add_circle</span> สร้างใบแจ้งหนี้ใหม่';
+            const f = document.getElementById('invoiceForm'); f.reset(); f.elements['_rowIndex'].value = '';
+            const d = new Date();
+            document.getElementById('form_date').value = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+            f.elements['BankName'].value = "ธนาคาร KASIKORN THAI"; f.elements['AccName'].value = "สุมนา จิวรุ่งเรือง"; f.elements['AccNo'].value = "004-2-335924";
+            calcTotal(); changeView('view-form');
+        }
+        function editInvoice(rid) {
+            const inv = invoicesData.find(i => i._rowIndex == rid); if (!inv) return;
+            document.getElementById('formTitle').innerHTML = '<span class="material-icons-round" style="color:#f59e0b;">edit_document</span> แก้ไขใบแจ้งหนี้';
+            const f = document.getElementById('invoiceForm'); f.reset();
+            Object.keys(inv).forEach(k => { if (f.elements[k]) f.elements[k].value = inv[k]; });
+            changeView('view-form');
+        }
+        function saveInvoice(e) {
+            e.preventDefault(); const d = Object.fromEntries(new FormData(e.target).entries());
+            const a = d._rowIndex ? 'update' : 'create'; const btn = document.getElementById('btnSubmit');
+            btn.disabled = true; btn.innerHTML = '<div class="loader" style="width:16px; height:16px; border-width:2px; margin-right:5px; border-top-color:#fff;"></div> กำลังบันทึก...';
+            if (isMockMode) { setTimeout(() => { showToast('บันทึกสำเร็จ (Mock)'); btn.disabled = false; btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกข้อมูลบิล'; changeView('view-dashboard'); }, 500); return; }
+            google.script.run.withSuccessHandler(res => {
+                let j = JSON.parse(res); btn.disabled = false; btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกข้อมูลบิล';
+                if (j.status === 'success') { showToast(j.message); loadData(); changeView('view-dashboard'); } else showToast(j.message, true);
+            }).apiRequest(a, d);
+        }
+        function deleteInvoice(rid) {
+            if (!confirm('ลบใบแจ้งหนี้นี้อย่างถาวร?')) return;
+            if (isMockMode) { showToast('ลบสำเร็จ (Mock)'); return; }
+            document.getElementById('loading').style.display = 'flex';
+            google.script.run.withSuccessHandler(res => {
+                let j = JSON.parse(res); if (j.status === 'success') { showToast(j.message); loadData(); } else { showToast(j.message, true); document.getElementById('loading').style.display = 'none'; }
+            }).apiRequest('delete', { _rowIndex: rid });
+        }
+        function ThaiBahtText(amt) {
+            if (isNaN(amt) || amt === 0) return 'ศูนย์บาทถ้วน';
+            let [b, s = '00'] = parseFloat(amt).toFixed(2).split('.'), t = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"], u = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
+            let conv = str => {
+                if (str === '0' || str === '00') return ''; let res = '';
+                for (let i = 0; i < str.length; i++) {
+                    let d = parseInt(str[i]), p = str.length - i - 1;
+                    if (d !== 0) res += (p === 1 && d === 1) ? 'สิบ' : (p === 1 && d === 2) ? 'ยี่สิบ' : (p === 0 && d === 1 && str.length > 1 && str[str.length - 2] !== '0') ? 'เอ็ด' : t[d] + u[p];
+                } return res;
+            };
+            let ba = conv(b), st = conv(s), res = '';
+            if (ba) res += ba + 'บาท'; if (!st) res += 'ถ้วน'; else res += st + 'สตางค์'; return res;
+        }
+        function calcTotal() {
+            let t = 0; for (let i = 1; i <= 4; i++) t += parseFloat(document.querySelector(`input[name="Item${i}Amt"]`).value) || 0;
+            document.getElementById('form_totalAmt').value = t.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('form_totalText').value = ThaiBahtText(t);
+        }
+        function printInvoice(rid) {
+            const i = invoicesData.find(v => v._rowIndex == rid); if (!i) return;
+            document.getElementById('view-print').innerHTML = `<div class="invoice-wrapper">${createHalf(i)}<div class="invoice-divider"></div>${createHalf(i)}</div>`;
+            changeView('view-print'); setTimeout(() => { window.print(); changeView('view-dashboard'); }, 300);
+        }
+        function createHalf(i) {
+            let rh = '', items = [{ d: i.Item1Desc, a: i.Item1Amt }, { d: i.Item2Desc, a: i.Item2Amt }, { d: i.Item3Desc, a: i.Item3Amt }, { d: i.Item4Desc, a: i.Item4Amt }].filter(x => x.d || x.a);
+            if (!items.length) rh = `<tr class="no-border-tb"><td class="col-room">${i.Room || ''}</td><td class="col-desc">&nbsp;</td><td class="col-amount">&nbsp;</td></tr>` + `<tr class="no-border-tb"><td class="col-room"></td><td class="col-desc">&nbsp;</td><td class="col-amount">&nbsp;</td></tr>`.repeat(2);
+            else {
+                items.forEach((x, idx) => {
+                    let rc = idx === 0 ? `<td class="col-room">${i.Room || ''}</td>` : `<td class="col-room"></td>`, bc = items.length === 1 ? 'no-border-tb' : (idx === 0 ? 'no-border-bottom' : (idx === items.length - 1 ? 'no-border-top' : 'no-border-tb'));
+                    let am = (x.a && !isNaN(x.a) && x.a.indexOf(',') === -1) ? Number(x.a).toLocaleString('en-US', { minimumFractionDigits: 2 }) : (x.a || '');
+                    rh += `<tr class="${bc}">${rc}<td class="col-desc">${x.d || ''}</td><td class="col-amount">${am}</td></tr>`;
+                });
+                for (let j = 0; j < 3 - items.length; j++) rh += `<tr class="${(items.length + j === 2) ? 'no-border-top' : 'no-border-tb'}"><td class="col-room"></td><td class="col-desc">&nbsp;</td><td class="col-amount">&nbsp;</td></tr>`;
+            }
+            return `<div class="invoice-half"><div class="header"><h1>ใบแจ้งหนี้</h1><h2>INVOICE</h2></div>
+            <div class="info-row"><div>Log No. : <span class="log-box">${i.LogNo || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}</span></div><div>วัน /เดือน /ปี : ${i.Date || ''}</div></div>
+            <table class="print-table"><thead><tr><th class="col-room">ห้อง</th><th class="col-desc">รายการ</th><th class="col-amount">จำนวนเงิน (บาท)</th></tr></thead><tbody>${rh}</tbody></table>
+            <div class="totals"><div class="totals-text">ตัวอักษร: ( ${i.TotalText || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'} ) ยอดรวม</div><div class="totals-amount">${i.TotalAmt || ''}</div></div>
+            <div class="footer"><div class="payment-info"><div class="qr-placeholder" style="display:${i.QRPicUrl ? 'block' : 'flex'}; background:${i.QRPicUrl ? 'transparent' : '#eee'};">${i.QRPicUrl ? `<img src="${i.QRPicUrl}" alt="QR" style="width:100%; height:100%; object-fit:contain;">` : '<span>QR Code</span>'}</div>
+            <div class="payment-box"><div style="font-weight:bold; border-bottom:1px solid #000; display:inline-block; margin-bottom:5px;">ช่องทางการชำระเงิน</div><div>${i.BankName || ''}</div><div>ชื่อบัญชี : ${i.AccName || ''}&nbsp;&nbsp;&nbsp;เลขบัญชี : ${i.AccNo || ''}</div></div></div>
+            <div class="sign-box">ผู้รับเงิน ....................................................</div></div></div>`;
+        }
+    </script>
 </body>
 
 </html>
