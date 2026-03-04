@@ -23,13 +23,9 @@
             overflow: hidden;
         }
 
-        /* Auth Screen */
         #authScreen {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             background: #f3f4f6;
             z-index: 9999;
             display: flex;
@@ -383,10 +379,7 @@
 
         .loading-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             background: rgba(255, 255, 255, 0.8);
             display: flex;
             justify-content: center;
@@ -657,22 +650,25 @@
 </head>
 
 <body>
-
     <!-- Auth Screen Overlay -->
     <div id="authScreen">
         <div class="auth-card">
             <span class="material-icons-round"
                 style="font-size: 5rem; color: #6366f1; margin-bottom: 10px;">account_circle</span>
             <h2 id="authTitle" style="margin-bottom: 10px;">กำลังตรวจสอบสิทธิ์ผู้ใช้...</h2>
-            <p id="authDesc" style="color: #6b7280; margin-bottom: 25px;">กรุณารอสักครู่ ระบบกำลังเช็คอีเมลบัญชี Google
-                ของคุณเพื่อยืนยันการเข้าใช้งาน</p>
+            <p id="authDesc" style="color: #6b7280; margin-bottom: 25px;">
+                กรุณารอสักครู่ ระบบกำลังเช็คอีเมลบัญชี Google ของคุณเพื่อยืนยันการเข้าใช้งาน
+            </p>
             <div id="authLoader" class="loader" style="width: 40px; height: 40px; border-width: 4px;"></div>
+
             <div id="authErrorPanel"
                 style="display:none; text-align:left; background:#fee2e2; padding:15px; border-radius:8px; margin-top:15px;">
-                <div style="font-weight:600; color:#b91c1c; display:flex; align-items:center; gap:5px;"><span
-                        class="material-icons-round">error</span> ปฏิเสธการเข้าถึง</div>
-                <p id="authErrorMsg" style="color:#991b1b; font-size:0.9rem; margin-top:5px; margin-bottom:0;"></p>
+                <div style="font-weight:600; color:#b91c1c; display:flex; align-items:center; gap:5px;">
+                    <span class="material-icons-round">error</span> ปฏิเสธการเข้าถึง / ตั้งค่าผิด
+                </div>
+                <div id="authErrorMsg" style="color:#991b1b; font-size:0.9rem; margin-top:8px;"></div>
             </div>
+
             <button class="btn btn-outline" id="btnRefreshAuth" style="display:none; margin-top: 20px; width:100%;"
                 onclick="checkAuth()">โหลดใหม่</button>
         </div>
@@ -704,20 +700,22 @@
     </aside>
 
     <main class="main-content">
-        <!-- Toast Notification -->
         <div id="toast" class="toast"><span class="material-icons-round" id="toast-icon">check_circle</span><span
                 id="toast-message">บันทึกสำเร็จ</span></div>
 
-        <!-- Dashboard View -->
+        <!-- Dashboard -->
         <div id="view-dashboard" class="view active no-print">
             <div class="dash-header">
                 <h2 style="margin: 0;">ประวัติใบแจ้งหนี้ทั้งหมด</h2>
-                <div class="search-bar"><span class="material-icons-round" style="color:#9ca3af;">search</span><input
-                        type="text" id="searchInput" placeholder="ค้นหา ชื่อ, ห้อง, เบอร์, Log..."
-                        oninput="filterTable()"></div>
+                <div class="search-bar">
+                    <span class="material-icons-round" style="color:#9ca3af;">search</span>
+                    <input type="text" id="searchInput" placeholder="ค้นหา ชื่อ, ห้อง, เบอร์, Log..."
+                        oninput="filterTable()">
+                </div>
                 <button class="btn btn-primary" onclick="startNewInvoice()"><span
                         class="material-icons-round">add</span> สร้างบิลใหม่</button>
             </div>
+
             <div class="card" style="position: relative; min-height: 400px;">
                 <div id="loadingDash" class="loading-overlay">
                     <div class="loader"></div>
@@ -741,7 +739,7 @@
             </div>
         </div>
 
-        <!-- Form View (Create/Edit) -->
+        <!-- Form -->
         <div id="view-form" class="view no-print">
             <div class="card" style="max-width: 900px; margin: 0 auto;">
                 <h2 id="formTitle"
@@ -784,7 +782,7 @@
                         <div class="input-group"><label>ยอดรวมทั้งสิ้น</label><input name="TotalAmt" id="form_totalAmt"
                                 readonly></div>
                         <div class="input-group"><label style="color:#6366f1;">ยอดรวมตัวอักษร (อัตโนมัติ)</label><input
-                                name="TotalText" id="form_totalText"></div>
+                                name="TotalText" id="form_totalText" readonly></div>
                         <div class="input-group"><label>ชื่อธนาคาร</label><input name="BankName"></div>
                         <div class="input-group"><label>ชื่อบัญชี</label><input name="AccName"></div>
                         <div class="input-group"><label>เลขบัญชี</label><input name="AccNo"></div>
@@ -802,7 +800,7 @@
             </div>
         </div>
 
-        <!-- Files Manager View -->
+        <!-- Files -->
         <div id="view-files" class="view no-print">
             <div class="dash-header">
                 <h2 style="margin: 0; display:flex; align-items:center; gap:10px;"><span class="material-icons-round"
@@ -816,8 +814,9 @@
                     style="font-size: 4rem; color: #f87171; margin-bottom: 15px;">folder_off</span>
                 <h3>ยังไม่ได้เชื่อมต่อโฟลเดอร์เก็บไฟล์ PDF</h3>
                 <p style="color: #6b7280; margin-bottom: 20px;">
-                    ระบบจะสร้างโฟลเดอร์ให้อัตโนมัติตอนที่ผู้ออกแบบระบบเริ่มใช้งาน หรือคุณสามารถไปกำหนดเองได้ที่เมนู <b
-                        style="color:#1f2937">ตั้งค่าระบบ</b></p>
+                    ระบบจะสร้างโฟลเดอร์ให้อัตโนมัติ หรือคุณสามารถกำหนดเองได้ที่เมนู <b
+                        style="color:#1f2937">ตั้งค่าระบบ</b>
+                </p>
                 <button class="btn btn-primary" onclick="changeView('view-settings')">ไปหน้าตั้งค่าระบบ</button>
             </div>
 
@@ -826,14 +825,11 @@
                     <div class="loader"></div>
                     <div>กำลังโหลดไฟล์จาก Google Drive...</div>
                 </div>
-
-                <div id="filesGrid" class="file-grid">
-                    <!-- Files will be drawn here -->
-                </div>
+                <div id="filesGrid" class="file-grid"></div>
             </div>
         </div>
 
-        <!-- Settings View -->
+        <!-- Settings -->
         <div id="view-settings" class="view no-print">
             <div class="card" style="max-width: 600px; margin: 0 auto;">
                 <h2
@@ -851,9 +847,8 @@
                     <label>Google Drive Folder ID (ระบบสร้างให้อัตโนมัติในชื่อ "Patties Bill Documents")</label>
                     <input type="text" id="settingFolderId" placeholder="เช่น 1A2b3C4d5E6f7G8h9I0J">
                     <p style="font-size: 0.85rem; color: #6b7280; margin-top: 8px; line-height: 1.5;">
-                        <b>หมายเหตุ:</b> ระบบจะสร้างและหาโฟลเดอร์สำหรับเก็บไฟล์ PDF ส่งให้ผู้ใช้อัตโนมัติ
-                        (ไม่ต้องกรอกเอง) <br />
-                        แต่สามารถนำรหัส Folder ID อื่นมาใส่แทนได้เพื่อเปลี่ยนที่เก็บไฟล์
+                        <b>หมายเหตุ:</b> ถ้าว่าง ระบบจะสร้างโฟลเดอร์ให้เองอัตโนมัติ<br />
+                        แต่สามารถใส่ Folder ID อื่นเพื่อเปลี่ยนที่เก็บได้
                     </p>
                 </div>
 
@@ -863,11 +858,9 @@
                     <label>ระบบกำหนดสิทธิ์การเข้าถึง (Allowed Google Emails)</label>
                     <input type="text" id="settingAllowedEmails" placeholder="example1@gmail.com, example2@gmail.com">
                     <p style="font-size: 0.85rem; color: #6b7280; margin-top: 8px; line-height: 1.5;">
-                        ระบุ <b>อีเมล</b> ที่คุณอนุญาตให้ใช้งานระบบนี้ได้ (คั่นด้วยลูกน้ำ <code>,</code>
-                        กรณีมีหลายคน)<br />
-                        <i>* กรณีเว้นว่างไว้ จะถือว่าเปิดสาธารณะ (ใครที่มีลิงก์ก็เข้าได้ตราบใดที่ใช้ Google
-                            Account)</i><br />
-                        <i>* อีเมลเจ้าของระบบ จะเข้าได้เสมอแม้ไม่ได้ระบุไว้ในช่องนี้</i>
+                        ระบุ <b>อีเมล</b> ที่อนุญาต (คั่นด้วย ,)<br />
+                        <i>* ถ้าว่าง = เปิดให้ทุกคนที่มีลิงก์เข้าได้ (แต่ยังต้องล็อกอิน Google)</i><br />
+                        <i>* อีเมลเจ้าของระบบเข้าได้เสมอ</i>
                     </p>
                 </div>
 
@@ -877,54 +870,89 @@
             </div>
         </div>
 
-        <!-- Print Template Container -->
+        <!-- Print -->
         <div id="view-print" class="view"></div>
     </main>
 
     <script>
-        let GAS_WEB_APP_URL = "";
+        // ====== FIX: กัน error จากตัวแปรที่ไม่มี (ของเดิมมี isMockMode แต่ไม่ประกาศ) ======
+        const isMockMode = false;
 
+        let GAS_WEB_APP_URL = "";
         let invoicesData = [];
         let appSettings = { folderId: '', allowedEmails: '' };
         let currentUserIsOwner = false;
 
         window.onload = () => { checkAuth(); };
 
-        function checkAuth() {
-            if (typeof google === 'undefined') {
-                // Try from local storage
-                if (!GAS_WEB_APP_URL) GAS_WEB_APP_URL = localStorage.getItem("PATTIES_BILL_APP_URL");
+        // ====== FIX: normalize URL ให้เป็น /exec เสมอ ======
+        function normalizeGASUrl(url) {
+            if (!url) return '';
+            let u = url.trim();
 
-                if (GAS_WEB_APP_URL && GAS_WEB_APP_URL.includes("script.google.com")) {
-                    // หากไม่ได้รันบน Google แต่มี URL Web App อยู่ -> เปลี่ยนหน้าเป็น Iframe เรียก Web App นั้นแทน!
-                    document.body.innerHTML = `<iframe src="${GAS_WEB_APP_URL}" style="width:100vw; height:100vh; border:none; display:block; margin:0; padding:0;" allow="fullscreen" title="Patties Bill System"></iframe>`;
-                    return;
-                } else {
-                    document.getElementById('authLoader').style.display = 'none';
-                    document.getElementById('authTitle').style.color = '#dc2626';
-                    document.getElementById('authTitle').innerText = 'ไม่พบการเชื่อมต่อระบบหลังบ้าน';
-                    document.getElementById('authDesc').style.display = 'none';
-                    document.getElementById('authErrorPanel').style.display = 'block';
-                    document.getElementById('authErrorMsg').innerHTML = `
-                        <p style="margin-top:0;">กรุณาระบุ Web App URL ของ Google Apps Script เพื่อให้ระบบทำงานได้</p>
-                        <input type="text" id="manualAppUrl" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%; padding:10px; margin-top:10px; border:1px solid #d1d5db; border-radius:6px; box-sizing:border-box;">
-                        <button onclick="saveAppUrl()" style="margin-top:15px; width:100%; padding:10px; background:#4f46e5; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">เชื่อมต่อระบบ</button>
-                    `;
+            // เอา query string ทิ้ง (กันบางคน copy URL พ่วงพารามิเตอร์)
+            u = u.split('?')[0];
+
+            // ถ้าเป็น /dev ให้เปลี่ยนเป็น /exec
+            u = u.replace(/\/dev$/i, '/exec');
+
+            // ถ้าไม่จบด้วย /exec แต่มี /macros/s/.../ ให้เติม /exec
+            const m = u.match(/https:\/\/script\.google\.com\/macros\/s\/[^/]+/i);
+            if (m && !/\/exec$/i.test(u)) u = m[0] + '/exec';
+
+            return u;
+        }
+
+        function showAuthUrlInput(msgHtml) {
+            document.getElementById('authLoader').style.display = 'none';
+            document.getElementById('authTitle').style.color = '#dc2626';
+            document.getElementById('authTitle').innerText = 'ยังไม่ได้เชื่อมต่อ Web App URL';
+            document.getElementById('authDesc').style.display = 'none';
+            document.getElementById('authErrorPanel').style.display = 'block';
+            document.getElementById('authErrorMsg').innerHTML = msgHtml || `
+        <p style="margin:0 0 10px 0;">กรุณาวาง <b>Web App URL (ต้องลงท้าย /exec)</b></p>
+        <input type="text" id="manualAppUrl" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
+        <button onclick="saveAppUrl()" style="margin-top:12px; width:100%; padding:10px; background:#4f46e5; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">เชื่อมต่อระบบ</button>
+        <div style="margin-top:10px; color:#7f1d1d; font-size:0.85rem;">
+          ถ้าเอา URL แบบ <b>/dev</b> หรือ URL หน้า <b>/edit</b> มาใส่ จะทำให้ค้าง/วนหน้าอนุญาตสิทธิ์
+        </div>
+      `;
+        }
+
+        function checkAuth() {
+            // กรณีไม่ได้รันใน Apps Script (เปิดไฟล์บนเครื่อง) -> ใช้ iframe ไปยัง Web App URL ที่ถูกต้อง
+            if (typeof google === 'undefined') {
+                if (!GAS_WEB_APP_URL) GAS_WEB_APP_URL = localStorage.getItem("PATTIES_BILL_APP_URL") || '';
+                GAS_WEB_APP_URL = normalizeGASUrl(GAS_WEB_APP_URL);
+
+                if (GAS_WEB_APP_URL && GAS_WEB_APP_URL.includes("script.google.com") && /\/exec$/i.test(GAS_WEB_APP_URL)) {
+                    document.body.innerHTML = `
+            <iframe src="${GAS_WEB_APP_URL}" style="width:100vw; height:100vh; border:none; display:block; margin:0; padding:0;" allow="fullscreen" title="Patties Bill System"></iframe>
+            <button onclick="clearAppUrl()" style="position:fixed; bottom:20px; right:20px; background:#ef4444; color:white; border:none; border-radius:100px; padding:10px 20px; font-size:14px; box-shadow:0 4px 6px rgba(0,0,0,0.1); cursor:pointer; z-index:9999;">
+              <span class="material-icons-round" style="font-size:16px; vertical-align:middle;">link_off</span> เปลี่ยนลิงก์ระบบ
+            </button>
+          `;
                     return;
                 }
+
+                showAuthUrlInput();
+                return;
             }
 
+            // รันใน Apps Script UI
             document.getElementById('authLoader').style.display = 'inline-block';
             document.getElementById('authErrorPanel').style.display = 'none';
             document.getElementById('btnRefreshAuth').style.display = 'none';
+            document.getElementById('authTitle').style.color = '#111827';
             document.getElementById('authTitle').innerText = 'กำลังตรวจสอบสิทธิ์ผู้ใช้...';
+            document.getElementById('authDesc').style.display = 'block';
 
             google.script.run.withSuccessHandler(res => {
-                let j = JSON.parse(res);
+                const j = JSON.parse(res);
+
                 if (j.status === 'success') {
-                    // Auth Passed
-                    document.getElementById('loggedEmail').innerText = j.userEmail || 'ไม่ได้ระบุพิกัด (Public)';
-                    currentUserIsOwner = j.isOwner;
+                    document.getElementById('loggedEmail').innerText = j.userEmail || 'ไม่พบอีเมล (โปรดตั้ง Deploy เป็น "User accessing the web app")';
+                    currentUserIsOwner = !!j.isOwner;
                     appSettings = j.settings || appSettings;
 
                     if (!currentUserIsOwner) {
@@ -935,14 +963,13 @@
                     }
 
                     document.getElementById('authScreen').style.display = 'none';
-                    loadData(); // Proceed to load data
+                    loadData();
                 } else {
-                    // Auth Failed
                     document.getElementById('authLoader').style.display = 'none';
                     document.getElementById('authTitle').style.color = '#dc2626';
                     document.getElementById('authTitle').innerText = 'คุณไม่มีสิทธิ์เข้าถึง';
                     document.getElementById('authErrorPanel').style.display = 'block';
-                    document.getElementById('authErrorMsg').innerText = j.message || 'บัญชี ' + (j.userEmail || 'ของคุณ') + ' ไม่ได้รับอนุญาตให้เข้าใช้งานระบบข้อมูลบิลนี้ กรุณาเปลี่ยนเป็นบัญชีที่ถูกต้อง';
+                    document.getElementById('authErrorMsg').innerText = j.message || 'บัญชีของคุณไม่ได้รับอนุญาต';
                     document.getElementById('btnRefreshAuth').style.display = 'block';
                 }
             }).withFailureHandler(err => {
@@ -956,13 +983,22 @@
         }
 
         function saveAppUrl() {
-            const val = document.getElementById('manualAppUrl').value.trim();
-            if (!val || !val.includes("script.google.com")) {
-                alert("รูปแบบลิงก์ไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง (ต้องเป็นลิงก์จาก script.google.com)");
+            const raw = (document.getElementById('manualAppUrl')?.value || '').trim();
+            const val = normalizeGASUrl(raw);
+
+            if (!val || !val.includes("script.google.com") || !/\/exec$/i.test(val)) {
+                alert("ลิงก์ไม่ถูกต้อง: ต้องเป็น Web App URL ที่ลงท้ายด้วย /exec\n\nตัวอย่าง:\nhttps://script.google.com/macros/s/AKfycb.../exec");
                 return;
             }
             localStorage.setItem("PATTIES_BILL_APP_URL", val);
             location.reload();
+        }
+
+        function clearAppUrl() {
+            if (confirm("ต้องการยกเลิกการเชื่อมต่อระบบ และรีเซ็ตเว็บบราวเซอร์นี้ใหม่ใช่หรือไม่?")) {
+                localStorage.removeItem("PATTIES_BILL_APP_URL");
+                location.reload();
+            }
         }
 
         function changeView(vid) {
@@ -986,9 +1022,9 @@
         function loadData() {
             document.getElementById('loadingDash').style.display = 'flex';
             google.script.run.withSuccessHandler(res => {
-                let j = JSON.parse(res);
+                const j = JSON.parse(res);
                 if (j.status === 'success') {
-                    invoicesData = j.data;
+                    invoicesData = j.data || [];
                     if (j.settings) {
                         appSettings = j.settings;
                         document.getElementById('settingFolderId').value = appSettings.folderId || '';
@@ -1008,47 +1044,54 @@
             const tb = document.querySelector('#invoiceTable tbody'); tb.innerHTML = '';
             const filtered = invoicesData.filter(i => (`${i.CustomerName || ''} ${i.CustomerPhone || ''} ${i.Room || ''} ${i.LogNo || ''} ${i.Date || ''}`).toLowerCase().includes(term));
 
-            if (filtered.length === 0) return tb.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color:#6b7280;">ไม่พบข้อมูล</td></tr>';
+            if (filtered.length === 0) {
+                tb.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color:#6b7280;">ไม่พบข้อมูล</td></tr>';
+                return;
+            }
 
             filtered.forEach(i => {
                 tb.innerHTML += `<tr>
-                    <td>${i.Date || '-'}</td>
-                    <td style="font-weight:500;">${i.LogNo || '-'}</td>
-                    <td>${i.Room || '-'}</td>
-                    <td>
-                        <div style="font-weight:500;">${i.CustomerName || '-'}</div>
-                        <div style="font-size:0.8rem; color:#6b7280;">${i.CustomerPhone || ''}</div>
-                    </td>
-                    <td style="font-weight:600; text-align:right; padding-right:25px;">
-                        ${i.TotalAmt ? Number(i.TotalAmt).toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}
-                    </td>
-                    <td style="text-align:center;">
-                        <div class="action-btns" style="justify-content:center;">
-                            <button class="action-btn" title="พิมพ์ (Print)" onclick="printInvoice('${i._rowIndex}')">
-                                <span class="material-icons-round" style="color:#6366f1;">print</span>
-                            </button>
-                            <button class="action-btn" title="สร้างเป็น PDF บน Drive" onclick="savePdfToDrive('${i._rowIndex}')">
-                                <span class="material-icons-round" style="color:#10b981;">picture_as_pdf</span>
-                            </button>
-                            <button class="action-btn" title="แก้ไข" onclick="editInvoice('${i._rowIndex}')">
-                                <span class="material-icons-round" style="color:#f59e0b;">edit</span>
-                            </button>
-                            <button class="action-btn btn-delete" title="ลบ" onclick="deleteInvoice('${i._rowIndex}')">
-                                <span class="material-icons-round">delete</span>
-                            </button>
-                        </div>
-                    </td>
-                </tr>`;
+          <td>${i.Date || '-'}</td>
+          <td style="font-weight:500;">${i.LogNo || '-'}</td>
+          <td>${i.Room || '-'}</td>
+          <td>
+            <div style="font-weight:500;">${i.CustomerName || '-'}</div>
+            <div style="font-size:0.8rem; color:#6b7280;">${i.CustomerPhone || ''}</div>
+          </td>
+          <td style="font-weight:600; text-align:right; padding-right:25px;">
+            ${i.TotalAmt ? Number(String(i.TotalAmt).replace(/,/g, '')).toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}
+          </td>
+          <td style="text-align:center;">
+            <div class="action-btns" style="justify-content:center;">
+              <button class="action-btn" title="พิมพ์ (Print)" onclick="printInvoice('${i._rowIndex}')">
+                <span class="material-icons-round" style="color:#6366f1;">print</span>
+              </button>
+              <button class="action-btn" title="สร้างเป็น PDF บน Drive" onclick="savePdfToDrive('${i._rowIndex}')">
+                <span class="material-icons-round" style="color:#10b981;">picture_as_pdf</span>
+              </button>
+              <button class="action-btn" title="แก้ไข" onclick="editInvoice('${i._rowIndex}')">
+                <span class="material-icons-round" style="color:#f59e0b;">edit</span>
+              </button>
+              <button class="action-btn btn-delete" title="ลบ" onclick="deleteInvoice('${i._rowIndex}')">
+                <span class="material-icons-round">delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>`;
             });
         }
 
         function startNewInvoice() {
             document.getElementById('formTitle').innerHTML = '<span class="material-icons-round" style="color:#6366f1;">add_circle</span> สร้างใบแจ้งหนี้ใหม่';
-            const f = document.getElementById('invoiceForm'); f.reset(); f.elements['_rowIndex'].value = '';
+            const f = document.getElementById('invoiceForm');
+            f.reset(); f.elements['_rowIndex'].value = '';
             const d = new Date();
             document.getElementById('form_date').value = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
-            f.elements['BankName'].value = "ธนาคาร KASIKORN THAI"; f.elements['AccName'].value = "สุมนา จิวรุ่งเรือง"; f.elements['AccNo'].value = "004-2-335924";
-            calcTotal(); changeView('view-form');
+            f.elements['BankName'].value = "ธนาคาร KASIKORN THAI";
+            f.elements['AccName'].value = "สุมนา จิวรุ่งเรือง";
+            f.elements['AccNo'].value = "004-2-335924";
+            calcTotal();
+            changeView('view-form');
         }
 
         function editInvoice(rid) {
@@ -1056,17 +1099,24 @@
             document.getElementById('formTitle').innerHTML = '<span class="material-icons-round" style="color:#f59e0b;">edit_document</span> แก้ไขใบแจ้งหนี้';
             const f = document.getElementById('invoiceForm'); f.reset();
             Object.keys(inv).forEach(k => { if (f.elements[k]) f.elements[k].value = inv[k]; });
+            calcTotal();
             changeView('view-form');
         }
 
         function saveInvoice(e) {
-            e.preventDefault(); const d = Object.fromEntries(new FormData(e.target).entries());
-            const a = d._rowIndex ? 'update' : 'create'; const btn = document.getElementById('btnSubmit');
-            btn.disabled = true; btn.innerHTML = '<div class="loader" style="width:16px; height:16px; border-width:2px; margin-right:5px; border-top-color:#fff;"></div> กำลังบันทึก...';
+            e.preventDefault();
+            const d = Object.fromEntries(new FormData(e.target).entries());
+            const a = d._rowIndex ? 'update' : 'create';
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loader" style="width:16px; height:16px; border-width:2px; margin-right:5px; border-top-color:#fff;"></div> กำลังบันทึก...';
 
             google.script.run.withSuccessHandler(res => {
-                let j = JSON.parse(res); btn.disabled = false; btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกข้อมูลบิล';
-                if (j.status === 'success') { showToast(j.message); loadData(); changeView('view-dashboard'); } else showToast(j.message, true);
+                const j = JSON.parse(res);
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกข้อมูลบิล';
+                if (j.status === 'success') { showToast(j.message); loadData(); changeView('view-dashboard'); }
+                else showToast(j.message, true);
             }).apiRequest(a, d);
         }
 
@@ -1074,7 +1124,9 @@
             if (!confirm('ลบใบแจ้งหนี้นี้อย่างถาวร (พ้นจากฐานข้อมูล)?')) return;
             document.getElementById('loadingDash').style.display = 'flex';
             google.script.run.withSuccessHandler(res => {
-                let j = JSON.parse(res); if (j.status === 'success') { showToast(j.message); loadData(); } else { showToast(j.message, true); document.getElementById('loadingDash').style.display = 'none'; }
+                const j = JSON.parse(res);
+                if (j.status === 'success') { showToast(j.message); loadData(); }
+                else { showToast(j.message, true); document.getElementById('loadingDash').style.display = 'none'; }
             }).apiRequest('delete', { _rowIndex: rid });
         }
 
@@ -1086,19 +1138,20 @@
 
             const fid = document.getElementById('settingFolderId').value.trim();
             const allowedEms = document.getElementById('settingAllowedEmails').value.trim();
+
             const btn = document.getElementById('btnSaveSetting');
-            btn.disabled = true; btn.innerHTML = '<div class="loader" style="width:16px; height:16px; border-width:2px; margin-right:5px; border-top-color:#fff;"></div> กำลังบันทึก...';
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loader" style="width:16px; height:16px; border-width:2px; margin-right:5px; border-top-color:#fff;"></div> กำลังบันทึก...';
 
             google.script.run.withSuccessHandler(res => {
-                let j = JSON.parse(res);
-                btn.disabled = false; btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกการตั้งค่า';
+                const j = JSON.parse(res);
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-icons-round">save</span> บันทึกการตั้งค่า';
                 if (j.status === 'success') {
-                    appSettings.folderId = fid;
-                    appSettings.allowedEmails = allowedEms;
+                    appSettings.folderId = j.settings?.folderId || fid;
+                    appSettings.allowedEmails = j.settings?.allowedEmails || allowedEms;
                     showToast(j.message);
-                } else {
-                    showToast(j.message, true);
-                }
+                } else showToast(j.message, true);
             }).apiRequest('saveSettings', { folderId: fid, allowedEmails: allowedEms });
         }
 
@@ -1115,12 +1168,9 @@
             document.getElementById('loadingFiles').style.display = 'flex';
 
             google.script.run.withSuccessHandler(res => {
-                let j = JSON.parse(res);
-                if (j.status === 'success') {
-                    drawFilesGrid(j.data);
-                } else {
-                    showToast(j.message, true);
-                }
+                const j = JSON.parse(res);
+                if (j.status === 'success') drawFilesGrid(j.data);
+                else showToast(j.message, true);
                 document.getElementById('loadingFiles').style.display = 'none';
             }).apiRequest('listDriveFiles', { folderId: appSettings.folderId });
         }
@@ -1136,107 +1186,107 @@
 
             files.forEach(f => {
                 grid.innerHTML += `
-                    <div class="file-card">
-                        <span class="material-icons-round icon">picture_as_pdf</span>
-                        <div class="name">${f.name}</div>
-                        <div class="date"><span class="material-icons-round" style="font-size:12px; vertical-align:middle;">schedule</span> ${f.dateCreated}</div>
-                        <div class="file-card-actions">
-                            <button class="btn btn-outline" onclick="window.open('${f.url}', '_blank')"><span class="material-icons-round">visibility</span> ดูไฟล์</button>
-                            <button class="btn btn-danger" onclick="deleteDriveFile('${f.id}')"><span class="material-icons-round">delete</span></button>
-                        </div>
-                    </div>
-                `;
+          <div class="file-card">
+            <span class="material-icons-round icon">picture_as_pdf</span>
+            <div class="name">${f.name}</div>
+            <div class="date"><span class="material-icons-round" style="font-size:12px; vertical-align:middle;">schedule</span> ${f.dateCreated}</div>
+            <div class="file-card-actions">
+              <button class="btn btn-outline" onclick="window.open('${f.url}', '_blank')"><span class="material-icons-round">visibility</span> ดูไฟล์</button>
+              <button class="btn btn-danger" onclick="deleteDriveFile('${f.id}')"><span class="material-icons-round">delete</span></button>
+            </div>
+          </div>
+        `;
             });
         }
 
         function deleteDriveFile(fileId) {
             if (!confirm('ยืนยันลบไฟล์ PDF นี้ออกจาก Google Drive? (ไฟล์จะไปอยู่ในถังขยะ)')) return;
-
             document.getElementById('loadingFiles').style.display = 'flex';
             google.script.run.withSuccessHandler(res => {
-                let j = JSON.parse(res);
+                const j = JSON.parse(res);
                 if (j.status === 'success') { showToast(j.message); loadDriveFiles(); }
                 else { showToast(j.message, true); document.getElementById('loadingFiles').style.display = 'none'; }
-            }).apiRequest('deleteDriveFile', { fileId: fileId });
+            }).apiRequest('deleteDriveFile', { fileId });
         }
 
-        // Action: Generate raw html logic for PDF and send it to drive
         function savePdfToDrive(rid) {
             const i = invoicesData.find(v => v._rowIndex == rid); if (!i) return;
-            if (!appSettings.folderId) {
-                showToast("ยังไม่ได้ตั้งค่า Google Drive Folder ID กรุณาไปที่หน้าตั้งค่า", true);
-                return;
-            }
+            if (!appSettings.folderId) { showToast("ยังไม่ได้ตั้งค่า Google Drive Folder ID กรุณาไปที่หน้าตั้งค่า", true); return; }
 
-            // Ask confirmation
             const fName = `Invoice_${i.Room || 'Bill'}_${i.LogNo ? i.LogNo.replace('/', '-') : new Date().getTime()}.pdf`;
             if (!confirm(`ต้องการสร้างเป็นไฟล์แจ้งหนี้ PDF (${fName}) ลงใน Google Drive หรือไม่?`)) return;
 
-            // Generate HTML Snapshot specifically for Google Drive Utilities PDF Generation bounds
             const docHtml = `<div style="font-family: 'Sarabun', sans-serif; font-size: 13px; color: #000;">
-                <h1 style="text-align:center; font-size:20px; font-weight:bold; margin-bottom:5px;">ใบแจ้งหนี้</h1>
-                <h2 style="text-align:center; font-size:16px; margin:0 0 15px 0;">INVOICE</h2>
-                <table style="width:100%; margin-bottom:10px;">
-                    <tr><td style="text-align:left;">Log No. : <b>${i.LogNo || ''}</b></td><td style="text-align:right;">วัน /เดือน /ปี : <b>${i.Date || ''}</b></td></tr>
-                </table>
-                <table style="width:100%; border-collapse:collapse; text-align:left; margin-bottom:0;">
-                    <tr><th style="border:1px solid #000; padding:8px; width:20%; text-align:center;">ห้อง</th><th style="border:1px solid #000; padding:8px; width:55%;">รายการ</th><th style="border:1px solid #000; padding:8px; width:25%; text-align:right;">จำนวนเงิน (บาท)</th></tr>
-                    <tr><td style="border:1px solid #000; padding:8px; text-align:center;">${i.Room || ''}</td><td style="border:1px solid #000; padding:8px;">${i.Item1Desc || '<br/>'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${i.Item1Amt || ''}</td></tr>
-                    <tr><td style="border:1px solid #000; padding:8px;"></td><td style="border:1px solid #000; padding:8px;">${i.Item2Desc || '<br/>'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${i.Item2Amt || ''}</td></tr>
-                    <tr><td style="border:1px solid #000; padding:8px;"></td><td style="border:1px solid #000; padding:8px;">${i.Item3Desc || '<br/>'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${i.Item3Amt || ''}</td></tr>
-                    <tr><td style="border:1px solid #000; padding:8px;"></td><td style="border:1px solid #000; padding:8px;">${i.Item4Desc || '<br/>'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${i.Item4Amt || ''}</td></tr>
-                </table>
-                <table style="width:100%; border-collapse:collapse;">
-                    <tr><td style="border:1px solid #000; border-top:none; padding:8px; width:75%;">ตัวอักษร: ( ${i.TotalText || ''} ) ยอดรวม</td><td style="border:1px solid #000; border-top:none; padding:8px; width:25%; text-align:right; font-weight:bold;">${i.TotalAmt || ''}</td></tr>
-                </table>
-                <table style="width:100%; margin-top:20px;">
-                    <tr>
-                        <td style="width:60%; vertical-align:top;">
-                            <div style="border:1px solid #000; padding:10px; border-radius:5px;">
-                                <b>ช่องทางการชำระเงิน</b><br/>${i.BankName || ''}<br/>ชื่อบัญชี : ${i.AccName || ''} เลขบัญชี : ${i.AccNo || ''}
-                            </div>
-                        </td>
-                        <td style="width:40%; text-align:right; vertical-align:bottom;">ผู้รับเงิน ....................................................</td>
-                    </tr>
-                </table>
-                ${i.QRPicUrl ? `<br/><img src="${i.QRPicUrl}" style="height:120px;" />` : ''}
-            </div>`;
+        <h1 style="text-align:center; font-size:20px; font-weight:bold; margin-bottom:5px;">ใบแจ้งหนี้</h1>
+        <h2 style="text-align:center; font-size:16px; margin:0 0 15px 0;">INVOICE</h2>
+        <table style="width:100%; margin-bottom:10px;">
+          <tr><td style="text-align:left;">Log No. : <b>${i.LogNo || ''}</b></td><td style="text-align:right;">วัน /เดือน /ปี : <b>${i.Date || ''}</b></td></tr>
+        </table>
+        <table style="width:100%; border-collapse:collapse; text-align:left; margin-bottom:0;">
+          <tr><th style="border:1px solid #000; padding:8px; width:20%; text-align:center;">ห้อง</th><th style="border:1px solid #000; padding:8px; width:55%;">รายการ</th><th style="border:1px solid #000; padding:8px; width:25%; text-align:right;">จำนวนเงิน (บาท)</th></tr>
+          <tr><td style="border:1px solid #000; padding:8px; text-align:center;">${i.Room || ''}</td><td style="border:1px solid #000; padding:8px;">${i.Item1Desc || '<br/>'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${i.Item1Amt || ''}</td></tr>
+          <tr><td style="border:1px solid #000; padding:8px;"></td><td style="border:1px solid #000; padding:8px;">${i.Item2Desc || '<br/>'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${i.Item2Amt || ''}</td></tr>
+          <tr><td style="border:1px solid #000; padding:8px;"></td><td style="border:1px solid #000; padding:8px;">${i.Item3Desc || '<br/>'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${i.Item3Amt || ''}</td></tr>
+          <tr><td style="border:1px solid #000; padding:8px;"></td><td style="border:1px solid #000; padding:8px;">${i.Item4Desc || '<br/>'}</td><td style="border:1px solid #000; padding:8px; text-align:right;">${i.Item4Amt || ''}</td></tr>
+        </table>
+        <table style="width:100%; border-collapse:collapse;">
+          <tr><td style="border:1px solid #000; border-top:none; padding:8px; width:75%;">ตัวอักษร: ( ${i.TotalText || ''} ) ยอดรวม</td><td style="border:1px solid #000; border-top:none; padding:8px; width:25%; text-align:right; font-weight:bold;">${i.TotalAmt || ''}</td></tr>
+        </table>
+        <table style="width:100%; margin-top:20px;">
+          <tr>
+            <td style="width:60%; vertical-align:top;">
+              <div style="border:1px solid #000; padding:10px; border-radius:5px;">
+                <b>ช่องทางการชำระเงิน</b><br/>${i.BankName || ''}<br/>ชื่อบัญชี : ${i.AccName || ''} เลขบัญชี : ${i.AccNo || ''}
+              </div>
+            </td>
+            <td style="width:40%; text-align:right; vertical-align:bottom;">ผู้รับเงิน ....................................................</td>
+          </tr>
+        </table>
+        ${i.QRPicUrl ? `<br/><img src="${i.QRPicUrl}" style="height:120px;" />` : ''}
+      </div>`;
 
-            // Combine two halves
             const printHtml = `<html lang="th"><head><meta charset="utf-8"/></head><body style="padding:40px; font-family: sans-serif;">
-                ${docHtml} <br/><hr style="border-top:1px dashed #ccc; margin:30px 0;"/><br/> ${docHtml}
-            </body></html>`;
+        ${docHtml} <br/><hr style="border-top:1px dashed #ccc; margin:30px 0;"/><br/> ${docHtml}
+      </body></html>`;
 
             document.getElementById('loadingDash').style.display = 'flex';
             google.script.run.withSuccessHandler(res => {
-                let j = JSON.parse(res);
+                const j = JSON.parse(res);
                 document.getElementById('loadingDash').style.display = 'none';
-                if (j.status === 'success') {
-                    showToast(j.message);
-                    window.open(j.fileUrl, '_blank');
-                } else {
-                    showToast(j.message, true);
-                }
+                if (j.status === 'success') { showToast(j.message); window.open(j.fileUrl, '_blank'); }
+                else showToast(j.message, true);
             }).apiRequest('savePdf', { folderId: appSettings.folderId, htmlContent: printHtml, fileName: fName });
         }
 
-        // Helpers
         function ThaiBahtText(amt) {
             if (isNaN(amt) || amt === 0) return 'ศูนย์บาทถ้วน';
-            let [b, s = '00'] = parseFloat(amt).toFixed(2).split('.'), t = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"], u = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
+            let [b, s = '00'] = parseFloat(amt).toFixed(2).split('.');
+            let t = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
+            let u = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
             let conv = str => {
-                if (str === '0' || str === '00') return ''; let res = '';
+                if (str === '0' || str === '00') return '';
+                let res = '';
                 for (let i = 0; i < str.length; i++) {
                     let d = parseInt(str[i]), p = str.length - i - 1;
-                    if (d !== 0) res += (p === 1 && d === 1) ? 'สิบ' : (p === 1 && d === 2) ? 'ยี่สิบ' : (p === 0 && d === 1 && str.length > 1 && str[str.length - 2] !== '0') ? 'เอ็ด' : t[d] + u[p];
-                } return res;
+                    if (d !== 0) {
+                        res += (p === 1 && d === 1) ? 'สิบ'
+                            : (p === 1 && d === 2) ? 'ยี่สิบ'
+                                : (p === 0 && d === 1 && str.length > 1 && str[str.length - 2] !== '0') ? 'เอ็ด'
+                                    : t[d] + u[p];
+                    }
+                }
+                return res;
             };
             let ba = conv(b), st = conv(s), res = '';
-            if (ba) res += ba + 'บาท'; if (!st) res += 'ถ้วน'; else res += st + 'สตางค์'; return res;
+            if (ba) res += ba + 'บาท';
+            if (!st) res += 'ถ้วน';
+            else res += st + 'สตางค์';
+            return res;
         }
 
         function calcTotal() {
-            let t = 0; for (let i = 1; i <= 4; i++) t += parseFloat(document.querySelector(`input[name="Item${i}Amt"]`).value) || 0;
+            let t = 0;
+            for (let i = 1; i <= 4; i++) t += parseFloat(document.querySelector(`input[name="Item${i}Amt"]`).value) || 0;
             document.getElementById('form_totalAmt').value = t.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             document.getElementById('form_totalText').value = ThaiBahtText(t);
         }
@@ -1244,27 +1294,41 @@
         function printInvoice(rid) {
             const i = invoicesData.find(v => v._rowIndex == rid); if (!i) return;
             document.getElementById('view-print').innerHTML = `<div class="invoice-wrapper">${createPrintingHalf(i)}<div class="invoice-divider"></div>${createPrintingHalf(i)}</div>`;
-            changeView('view-print'); setTimeout(() => { window.print(); changeView('view-dashboard'); }, 300);
+            changeView('view-print');
+            setTimeout(() => { window.print(); changeView('view-dashboard'); }, 300);
         }
 
         function createPrintingHalf(i) {
-            let rh = '', items = [{ d: i.Item1Desc, a: i.Item1Amt }, { d: i.Item2Desc, a: i.Item2Amt }, { d: i.Item3Desc, a: i.Item3Amt }, { d: i.Item4Desc, a: i.Item4Amt }].filter(x => x.d || x.a);
-            if (!items.length) rh = `<tr class="no-border-tb"><td class="col-room">${i.Room || ''}</td><td class="col-desc">&nbsp;</td><td class="col-amount">&nbsp;</td></tr>` + `<tr class="no-border-tb"><td class="col-room"></td><td class="col-desc">&nbsp;</td><td class="col-amount">&nbsp;</td></tr>`.repeat(2);
-            else {
+            let rh = '';
+            let items = [
+                { d: i.Item1Desc, a: i.Item1Amt },
+                { d: i.Item2Desc, a: i.Item2Amt },
+                { d: i.Item3Desc, a: i.Item3Amt },
+                { d: i.Item4Desc, a: i.Item4Amt }
+            ].filter(x => x.d || x.a);
+
+            if (!items.length) {
+                rh = `<tr class="no-border-tb"><td class="col-room">${i.Room || ''}</td><td class="col-desc">&nbsp;</td><td class="col-amount">&nbsp;</td></tr>`
+                    + `<tr class="no-border-tb"><td class="col-room"></td><td class="col-desc">&nbsp;</td><td class="col-amount">&nbsp;</td></tr>`.repeat(2);
+            } else {
                 items.forEach((x, idx) => {
-                    let rc = idx === 0 ? `<td class="col-room">${i.Room || ''}</td>` : `<td class="col-room"></td>`, bc = items.length === 1 ? 'no-border-tb' : (idx === 0 ? 'no-border-bottom' : (idx === items.length - 1 ? 'no-border-top' : 'no-border-tb'));
-                    let am = (x.a && !isNaN(x.a) && x.a.indexOf(',') === -1) ? Number(x.a).toLocaleString('en-US', { minimumFractionDigits: 2 }) : (x.a || '');
+                    let rc = idx === 0 ? `<td class="col-room">${i.Room || ''}</td>` : `<td class="col-room"></td>`;
+                    let bc = items.length === 1 ? 'no-border-tb' : (idx === 0 ? 'no-border-bottom' : (idx === items.length - 1 ? 'no-border-top' : 'no-border-tb'));
+                    let am = (x.a && !isNaN(x.a) && String(x.a).indexOf(',') === -1) ? Number(x.a).toLocaleString('en-US', { minimumFractionDigits: 2 }) : (x.a || '');
                     rh += `<tr class="${bc}">${rc}<td class="col-desc">${x.d || ''}</td><td class="col-amount">${am}</td></tr>`;
                 });
-                for (let j = 0; j < 3 - items.length; j++) rh += `<tr class="${(items.length + j === 2) ? 'no-border-top' : 'no-border-tb'}"><td class="col-room"></td><td class="col-desc">&nbsp;</td><td class="col-amount">&nbsp;</td></tr>`;
+                for (let j = 0; j < 3 - items.length; j++) {
+                    rh += `<tr class="${(items.length + j === 2) ? 'no-border-top' : 'no-border-tb'}"><td class="col-room"></td><td class="col-desc">&nbsp;</td><td class="col-amount">&nbsp;</td></tr>`;
+                }
             }
+
             return `<div class="invoice-half"><div class="header"><h1>ใบแจ้งหนี้</h1><h2>INVOICE</h2></div>
-            <div class="info-row"><div>Log No. : <span class="log-box">${i.LogNo || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}</span></div><div>วัน /เดือน /ปี : ${i.Date || ''}</div></div>
-            <table class="print-table"><thead><tr><th class="col-room">ห้อง</th><th class="col-desc">รายการ</th><th class="col-amount">จำนวนเงิน (บาท)</th></tr></thead><tbody>${rh}</tbody></table>
-            <div class="totals"><div class="totals-text">ตัวอักษร: ( ${i.TotalText || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'} ) ยอดรวม</div><div class="totals-amount">${i.TotalAmt || ''}</div></div>
-            <div class="footer"><div class="payment-info"><div class="qr-placeholder" style="display:${i.QRPicUrl ? 'block' : 'flex'}; border:${i.QRPicUrl ? 'none' : '1px solid #ccc'}; background:${i.QRPicUrl ? 'transparent' : '#eee'};">${i.QRPicUrl ? `<img src="${i.QRPicUrl}" alt="QR" style="width:100%; height:100%; object-fit:contain;">` : '<span>QR Code</span>'}</div>
-            <div class="payment-box"><div style="font-weight:bold; border-bottom:1px solid #000; display:inline-block; margin-bottom:5px;">ช่องทางการชำระเงิน</div><div>${i.BankName || ''}</div><div>ชื่อบัญชี : ${i.AccName || ''}&nbsp;&nbsp;&nbsp;เลขบัญชี : ${i.AccNo || ''}</div></div></div>
-            <div class="sign-box">ผู้รับเงิน ....................................................</div></div></div>`;
+        <div class="info-row"><div>Log No. : <span class="log-box">${i.LogNo || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}</span></div><div>วัน /เดือน /ปี : ${i.Date || ''}</div></div>
+        <table class="print-table"><thead><tr><th class="col-room">ห้อง</th><th class="col-desc">รายการ</th><th class="col-amount">จำนวนเงิน (บาท)</th></tr></thead><tbody>${rh}</tbody></table>
+        <div class="totals"><div class="totals-text">ตัวอักษร: ( ${i.TotalText || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'} ) ยอดรวม</div><div class="totals-amount">${i.TotalAmt || ''}</div></div>
+        <div class="footer"><div class="payment-info"><div class="qr-placeholder" style="display:${i.QRPicUrl ? 'block' : 'flex'}; border:${i.QRPicUrl ? 'none' : '1px solid #ccc'}; background:${i.QRPicUrl ? 'transparent' : '#eee'};">${i.QRPicUrl ? `<img src="${i.QRPicUrl}" alt="QR" style="width:100%; height:100%; object-fit:contain;">` : '<span>QR Code</span>'}</div>
+        <div class="payment-box"><div style="font-weight:bold; border-bottom:1px solid #000; display:inline-block; margin-bottom:5px;">ช่องทางการชำระเงิน</div><div>${i.BankName || ''}</div><div>ชื่อบัญชี : ${i.AccName || ''}&nbsp;&nbsp;&nbsp;เลขบัญชี : ${i.AccNo || ''}</div></div></div>
+        <div class="sign-box">ผู้รับเงิน ....................................................</div></div></div>`;
         }
     </script>
 </body>
