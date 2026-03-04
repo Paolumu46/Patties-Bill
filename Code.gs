@@ -45,7 +45,32 @@ function processAction(action, data) {
   const allowedEmails = allowedEmailsStr.split(',').map(e => e.trim().toLowerCase()).filter(e => e);
   const isOwner = (activeUserEmail === effectiveEmail);
   const isAuthorized = isOwner || allowedEmails.length === 0 || allowedEmails.includes(activeUserEmail.toLowerCase());
-  
+
+  // Auto-initialize Drive Folder if it does not exist
+  if (isOwner && !folderId) {
+    try {
+      const folderName = "Patties Bill Documents";
+      const folders = DriveApp.searchFolders("title = '" + folderName + "' and trashed = false");
+      if (folders.hasNext()) {
+        folderId = folders.next().getId();
+      } else {
+        folderId = DriveApp.createFolder(folderName).getId();
+      }
+      
+      let saved = false;
+      for (let i = 1; i < settingsData.length; i++) {
+        if (settingsData[i][0] === 'FolderID') {
+          settingsSheet.getRange(i + 1, 2).setValue(folderId);
+          saved = true; 
+          break;
+        }
+      }
+      if (!saved) settingsSheet.appendRow(['FolderID', folderId]);
+    } catch(e) {
+      // Ignore if fail
+    }
+  }
+
   if (action === 'checkAuth') {
     return JSON.stringify({
       status: isAuthorized ? 'success' : 'unauthorized',

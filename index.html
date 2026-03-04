@@ -814,9 +814,10 @@
             <div id="fileManagerNoSettings" class="card" style="display:none; text-align:center; padding: 40px;">
                 <span class="material-icons-round"
                     style="font-size: 4rem; color: #f87171; margin-bottom: 15px;">folder_off</span>
-                <h3>ยังไม่ได้ตั้งค่า Folder ID</h3>
-                <p style="color: #6b7280; margin-bottom: 20px;">กรุณาไปที่เมนู <b style="color:#1f2937">ตั้งค่าระบบ</b>
-                    เพื่อระบุ Folder ID ของ Google Drive ก่อนใช้งาน</p>
+                <h3>ยังไม่ได้เชื่อมต่อโฟลเดอร์เก็บไฟล์ PDF</h3>
+                <p style="color: #6b7280; margin-bottom: 20px;">
+                    ระบบจะสร้างโฟลเดอร์ให้อัตโนมัติตอนที่ผู้ออกแบบระบบเริ่มใช้งาน หรือคุณสามารถไปกำหนดเองได้ที่เมนู <b
+                        style="color:#1f2937">ตั้งค่าระบบ</b></p>
                 <button class="btn btn-primary" onclick="changeView('view-settings')">ไปหน้าตั้งค่าระบบ</button>
             </div>
 
@@ -847,12 +848,12 @@
                 </div>
 
                 <div class="input-group">
-                    <label>Google Drive Folder ID (สำหรับบันทึกไฟล์ PDF)</label>
+                    <label>Google Drive Folder ID (ระบบสร้างให้อัตโนมัติในชื่อ "Patties Bill Documents")</label>
                     <input type="text" id="settingFolderId" placeholder="เช่น 1A2b3C4d5E6f7G8h9I0J">
                     <p style="font-size: 0.85rem; color: #6b7280; margin-top: 8px; line-height: 1.5;">
-                        <b>วิธีหา Folder ID:</b> เปิดโฟลเดอร์ Google Drive บนบราวเซอร์ และคัดลอกรหัสท้าย URL <br /> เช่น
-                        <code
-                            style="background:#f3f4f6; padding:2px 4px; border-radius:4px;">https://drive.google.com/drive/folders/<b>1A2b3C4d5E...</b></code>
+                        <b>หมายเหตุ:</b> ระบบจะสร้างและหาโฟลเดอร์สำหรับเก็บไฟล์ PDF ส่งให้ผู้ใช้อัตโนมัติ
+                        (ไม่ต้องกรอกเอง) <br />
+                        แต่สามารถนำรหัส Folder ID อื่นมาใส่แทนได้เพื่อเปลี่ยนที่เก็บไฟล์
                     </p>
                 </div>
 
