@@ -882,6 +882,8 @@
     </main>
 
     <script>
+        let GAS_WEB_APP_URL = "";
+
         let invoicesData = [];
         let appSettings = { folderId: '', allowedEmails: '' };
         let currentUserIsOwner = false;
@@ -890,13 +892,26 @@
 
         function checkAuth() {
             if (typeof google === 'undefined') {
-                document.getElementById('authLoader').style.display = 'none';
-                document.getElementById('authTitle').style.color = '#dc2626';
-                document.getElementById('authTitle').innerText = 'ไม่สามารถเชื่อมต่อระบบหลังบ้านได้';
-                document.getElementById('authDesc').style.display = 'none';
-                document.getElementById('authErrorPanel').style.display = 'block';
-                document.getElementById('authErrorMsg').innerText = 'โปรดเปิดระบบนี้ผ่าน Google Apps Script Web App URL เท่านั้น (ไม่สามารถรันไฟล์ .html ธรรมดาได้)';
-                return;
+                // Try from local storage
+                if (!GAS_WEB_APP_URL) GAS_WEB_APP_URL = localStorage.getItem("PATTIES_BILL_APP_URL");
+
+                if (GAS_WEB_APP_URL && GAS_WEB_APP_URL.includes("script.google.com")) {
+                    // หากไม่ได้รันบน Google แต่มี URL Web App อยู่ -> เปลี่ยนหน้าเป็น Iframe เรียก Web App นั้นแทน!
+                    document.body.innerHTML = `<iframe src="${GAS_WEB_APP_URL}" style="width:100vw; height:100vh; border:none; display:block; margin:0; padding:0;" allow="fullscreen" title="Patties Bill System"></iframe>`;
+                    return;
+                } else {
+                    document.getElementById('authLoader').style.display = 'none';
+                    document.getElementById('authTitle').style.color = '#dc2626';
+                    document.getElementById('authTitle').innerText = 'ไม่พบการเชื่อมต่อระบบหลังบ้าน';
+                    document.getElementById('authDesc').style.display = 'none';
+                    document.getElementById('authErrorPanel').style.display = 'block';
+                    document.getElementById('authErrorMsg').innerHTML = `
+                        <p style="margin-top:0;">กรุณาระบุ Web App URL ของ Google Apps Script เพื่อให้ระบบทำงานได้</p>
+                        <input type="text" id="manualAppUrl" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%; padding:10px; margin-top:10px; border:1px solid #d1d5db; border-radius:6px; box-sizing:border-box;">
+                        <button onclick="saveAppUrl()" style="margin-top:15px; width:100%; padding:10px; background:#4f46e5; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">เชื่อมต่อระบบ</button>
+                    `;
+                    return;
+                }
             }
 
             document.getElementById('authLoader').style.display = 'inline-block';
@@ -938,6 +953,16 @@
                 document.getElementById('authErrorMsg').innerText = err.message || err.toString();
                 document.getElementById('btnRefreshAuth').style.display = 'block';
             }).apiRequest('checkAuth', {});
+        }
+
+        function saveAppUrl() {
+            const val = document.getElementById('manualAppUrl').value.trim();
+            if (!val || !val.includes("script.google.com")) {
+                alert("รูปแบบลิงก์ไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง (ต้องเป็นลิงก์จาก script.google.com)");
+                return;
+            }
+            localStorage.setItem("PATTIES_BILL_APP_URL", val);
+            location.reload();
         }
 
         function changeView(vid) {
